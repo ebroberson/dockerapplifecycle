@@ -444,6 +444,21 @@ var _ = Describe("Launcher", func() {
 		ItExecutesTheCommandWithTheRightEnvironment()
 	})
 
+	FContext("when only an entrypoint is specified", func() {
+		BeforeEach(func() {
+			launcherCmd.Args = []string{
+				"launcher",
+				appDir,
+				"",
+				`{ "entrypoint": ["/bin/echo", "abc"] }`,
+			}
+		})
+
+		It("uses the entrypoint", func() {
+			Eventually(session).Should(gbytes.Say("abc"))
+		})
+	})
+
 	Context("when both an entrypoint and a cmd are in the metadata", func() {
 		BeforeEach(func() {
 			launcherCmd.Args = []string{

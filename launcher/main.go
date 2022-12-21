@@ -95,16 +95,22 @@ func main() {
 	// https://docs.docker.com/reference/builder/#cmd dictate how Entrypoint
 	// and Cmd are treated by docker; we follow these rules here
 	var argv []string
+	fmt.Fprintf(os.Stdout, "startCommand = %s\n", startCommand)
+	fmt.Fprintf(os.Stdout, "executionMetadata.Entrypoint = %s\n", executionMetadata.Entrypoint)
+	fmt.Fprintf(os.Stdout, "executionMetadata.Cmd = %s\n", executionMetadata.Cmd)
 	if startCommand != "" {
 		argv = []string{"/bin/sh", "-c", startCommand}
+		fmt.Fprintf(os.Stdout, "argv = %s\n", argv)
 	} else {
 		argv = append(executionMetadata.Entrypoint, executionMetadata.Cmd...)
+		fmt.Fprintf(os.Stdout, "argv = %s\n", argv)
 		argv[0], err = exec.LookPath(argv[0])
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to resolve path: %s", err)
 			os.Exit(1)
 		}
 	}
+	fmt.Sprintf("argv = %s\n", argv)
 
 	runtime.GOMAXPROCS(1)
 	err = syscall.Exec(argv[0], argv, os.Environ())
